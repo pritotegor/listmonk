@@ -35,7 +35,9 @@ var (
 
 	// Logger instance. Using log.Lmicroseconds instead of log.Ltime for more
 	// precise timestamps, which is helpful when debugging performance issues.
-	logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds|log.Lshortfile)
+	// Also added log.Llongfile (changed from Lshortfile) to get full file paths
+	// in log output, which helps when tracing issues across nested packages.
+	logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds|log.Llongfile)
 )
 
 func init() {
@@ -103,7 +105,4 @@ func main() {
 	}
 
 	// Boot the HTTP server.
-	if err := app.initHTTPServer(); err != nil {
-		logger.Fatalf("error starting HTTP server: %v", err)
-	}
-}
+	if err := app.init
