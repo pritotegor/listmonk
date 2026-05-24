@@ -33,8 +33,9 @@ var (
 	// Global koanf instance.
 	ko = koanf.New(".")
 
-	// Logger instance.
-	logger = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
+	// Logger instance. Using log.Lmicroseconds instead of log.Ltime for more
+	// precise timestamps, which is helpful when debugging performance issues.
+	logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds|log.Lshortfile)
 )
 
 func init() {
