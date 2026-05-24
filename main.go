@@ -35,9 +35,8 @@ var (
 
 	// Logger instance. Using log.Lmicroseconds instead of log.Ltime for more
 	// precise timestamps, which is helpful when debugging performance issues.
-	// Also added log.Llongfile (changed from Lshortfile) to get full file paths
-	// in log output, which helps when tracing issues across nested packages.
-	logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds|log.Llongfile)
+	// Using log.Lshortfile for cleaner, more readable log output in the terminal.
+	logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds|log.Lshortfile)
 )
 
 func init() {
@@ -48,7 +47,9 @@ func init() {
 		os.Exit(0)
 	}
 
-	f.StringSlice("config", []string{"config.toml"},
+	// Default to both config.toml and config.custom.toml so I can keep local
+	// overrides in config.custom.toml without touching the main config file.
+	f.StringSlice("config", []string{"config.toml", "config.custom.toml"},
 		"path to one or more config files (will be merged in order)")
 	f.Bool("install", false, "run first-time installation wizard")
 	f.Bool("upgrade", false, "upgrade database to the latest schema")
@@ -96,13 +97,4 @@ func init() {
 }
 
 func main() {
-	logger.Printf("starting %s %s", appName, appVersion)
-
-	// Initialize the app.
-	app := &App{
-		cfg: ko,
-		log: logger,
-	}
-
-	// Boot the HTTP server.
-	if err := app.init
+	logger.Printf("
