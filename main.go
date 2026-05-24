@@ -71,7 +71,9 @@ func init() {
 		os.Exit(0)
 	}
 
-	// Load config files.
+	// Load config files. Missing files are skipped with a warning rather than
+	// a fatal error, since config.custom.toml and config.local.toml are optional
+	// by convention in this fork.
 	cfgFiles, _ := f.GetStringSlice("config")
 	for _, c := range cfgFiles {
 		if err := ko.Load(file.Provider(c), toml.Parser()); err != nil {
@@ -81,6 +83,7 @@ func init() {
 			}
 			logger.Fatalf("error loading config file %s: %v", c, err)
 		}
+		logger.Printf("loaded config file: %s", c)
 	}
 
 	// Load environment variables (LISTMONK_ prefix).
@@ -91,5 +94,4 @@ func init() {
 		logger.Fatalf("error loading environment variables: %v", err)
 	}
 
-	// Load CLI flags into koanf (overrides config file and env vars).
-	if err := ko.Load(posflag.Provider(f, ".", ko), nil
+	// Load CLI flag
