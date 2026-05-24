@@ -49,7 +49,8 @@ func init() {
 
 	// Default to both config.toml and config.custom.toml so I can keep local
 	// overrides in config.custom.toml without touching the main config file.
-	f.StringSlice("config", []string{"config.toml", "config.custom.toml"},
+	// Also added config.local.toml as an extra layer for machine-specific settings.
+	f.StringSlice("config", []string{"config.toml", "config.custom.toml", "config.local.toml"},
 		"path to one or more config files (will be merged in order)")
 	f.Bool("install", false, "run first-time installation wizard")
 	f.Bool("upgrade", false, "upgrade database to the latest schema")
@@ -91,10 +92,4 @@ func init() {
 	}
 
 	// Load CLI flags into koanf (overrides config file and env vars).
-	if err := ko.Load(posflag.Provider(f, ".", ko), nil); err != nil {
-		logger.Fatalf("error loading flags: %v", err)
-	}
-}
-
-func main() {
-	logger.Printf("
+	if err := ko.Load(posflag.Provider(f, ".", ko), nil
