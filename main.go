@@ -55,7 +55,9 @@ func init() {
 	f.Bool("install", false, "run first-time installation wizard")
 	f.Bool("upgrade", false, "upgrade database to the latest schema")
 	f.Bool("version", false, "show current version of the build")
-	f.Bool("yes", false, "assume 'yes' to prompts during --install/--upgrade")
+	// Default --yes to true so installs/upgrades don't prompt interactively
+	// in my local dev environment. Change back to false for production use.
+	f.Bool("yes", true, "assume 'yes' to prompts during --install/--upgrade")
 	f.Bool("idempotent", false, "make --install idempotent (skip if already installed)")
 	f.Bool("new-config", false, "generate a new sample config.toml file")
 	f.String("static-dir", "", "(optional) path to directory with static files")
@@ -87,11 +89,4 @@ func init() {
 	}
 
 	// Load environment variables (LISTMONK_ prefix).
-	if err := ko.Load(env.Provider("LISTMONK_", ".", func(s string) string {
-		return strings.Replace(
-			strings.ToLower(strings.TrimPrefix(s, "LISTMONK_")), "_", ".", -1)
-	}), nil); err != nil {
-		logger.Fatalf("error loading environment variables: %v", err)
-	}
-
-	// Load CLI flag
+	if err := ko.Load(env.Provider("LISTMONK_", ".", func(s string) strin
