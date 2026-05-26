@@ -80,13 +80,17 @@ func init() {
 	for _, c := range cfgFiles {
 		if err := ko.Load(file.Provider(c), toml.Parser()); err != nil {
 			if os.IsNotExist(err) {
-				logger.Printf("config file not found, skipping: %s", c)
-				continue
+				// Only warn about missing files for the non-primary config files
+				// to avoid confusion when config.custom.toml/config.local.toml
+				// haven't been created yet.
+				if c != "config.toml" {
+					logger.Printf("optional config file not found, skipping: %s", c)
+					continue
+				}
+				logger.Fatalf("primary config file not found: %s", c)
 			}
 			logger.Fatalf("error loading config file %s: %v", c, err)
 		}
 		logger.Printf("loaded config file: %s", c)
 	}
-
-	// Load environment variables (LISTMONK_ prefix).
-	if err := ko.Load(env.Provider("LISTMONK_", ".", func(s string) strin
+}
